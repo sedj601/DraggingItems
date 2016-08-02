@@ -10,13 +10,9 @@ package draggingitems;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
-import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
@@ -64,6 +60,7 @@ public class FXMLDocumentController implements Initializable {
         {
             Integer intI = i;
             
+           
             
             deck.get(i).setLayoutX(apMain.getPrefWidth() / 2 - (31));//make this generic for any size card (31) needs to be change
             deck.get(i).setLayoutY(apMain.getPrefHeight() / 2 - (45));//make this generic for any size card (45) needs to be change
@@ -87,21 +84,15 @@ public class FXMLDocumentController implements Initializable {
         }  
         apMain.getChildren().addAll(deck);  
         
-    
-        
-        //Path path = new Path();
-        //path.getElements().add(new MoveTo(50,50));
-        //path.getElements().add(new MoveTo(100, 100));
-        //path.getElements().add(new MoveTo(200, 200));
-        //path.getElements().add(new CubicCurveTo(380, 0, 380, 120, 200, 120));
-        //path.getElements().add(new CubicCurveTo(0, 120, 0, 240, 380, 240));
-        
         int counter = 400;
         
+         double centerHeight = apMain.getPrefHeight() / 2 - (45);
+            double centerWidth = apMain.getPrefWidth() / 2;
         Timeline timeline = new Timeline();
         for(int i = 0; i < 20; i++)
         {  
             int a = i % 4;
+            int z = i / 4;
             switch(a)
             {
                 case 0:
@@ -110,7 +101,7 @@ public class FXMLDocumentController implements Initializable {
                         new KeyValue(deck.get(i).translateXProperty(), 0),
                         new KeyValue(deck.get(i).translateYProperty(), 0)),
                     new KeyFrame(new Duration((i + 1) * counter),
-                        new KeyValue(deck.get(i).translateXProperty(), 200),
+                        new KeyValue(deck.get(i).translateXProperty(), 175 + (10 * z)),
                         new KeyValue(deck.get(i).translateYProperty(), 0))
                     ); 
                    break;
@@ -120,8 +111,8 @@ public class FXMLDocumentController implements Initializable {
                         new KeyValue(deck.get(i).translateXProperty(), 0),
                         new KeyValue(deck.get(i).translateYProperty(), 0)),
                     new KeyFrame(new Duration((i + 1) * counter),
-                        new KeyValue(deck.get(i).translateXProperty(), 0),
-                        new KeyValue(deck.get(i).translateYProperty(), 150))
+                        new KeyValue(deck.get(i).translateXProperty(),  20 - (10 * z)),
+                        new KeyValue(deck.get(i).translateYProperty(), 175))
                     ); 
                    break;
                 case 2:
@@ -130,7 +121,7 @@ public class FXMLDocumentController implements Initializable {
                         new KeyValue(deck.get(i).translateXProperty(), 0),
                         new KeyValue(deck.get(i).translateYProperty(), 0)),
                     new KeyFrame(new Duration((i + 1) * counter),
-                        new KeyValue(deck.get(i).translateXProperty(), -200),
+                        new KeyValue(deck.get(i).translateXProperty(), -175 - (10 * z)),
                         new KeyValue(deck.get(i).translateYProperty(), 0))
                     ); 
                    break;
@@ -140,8 +131,8 @@ public class FXMLDocumentController implements Initializable {
                         new KeyValue(deck.get(i).translateXProperty(), 0),
                         new KeyValue(deck.get(i).translateYProperty(), 0)),
                     new KeyFrame(new Duration((i + 1) * counter),
-                        new KeyValue(deck.get(i).translateXProperty(), 0),
-                        new KeyValue(deck.get(i).translateYProperty(), -150))
+                        new KeyValue(deck.get(i).translateXProperty(), 20 - (10 * z)),
+                        new KeyValue(deck.get(i).translateYProperty(), -175))
                     ); 
                    break;
             } 
@@ -185,38 +176,4 @@ public class FXMLDocumentController implements Initializable {
     {
         return isTransitionPlaying;  
     }
-    
-    private synchronized void playAnimationAndWaitForFinish(final Animation animation) {
-    if (Platform.isFxApplicationThread()) {
-        throw new IllegalThreadStateException("Cannot be executed on main JavaFX thread");
-    }
-    final Thread currentThread = Thread.currentThread();
-    final EventHandler<ActionEvent> originalOnFinished = animation.getOnFinished();
-    animation.setOnFinished(new EventHandler<ActionEvent>() {
-
-        @Override
-        public void handle(ActionEvent event) {
-            if (originalOnFinished != null) {
-                originalOnFinished.handle(event);
-            }
-            synchronized (currentThread) {
-                currentThread.notify();
-            }
-        }
-    });
-    Platform.runLater(new Runnable() {
-
-        @Override
-        public void run() {
-            animation.play();
-        }
-    });
-    synchronized (currentThread) {
-        try {
-            currentThread.wait();
-        } catch (InterruptedException ex) {
-            //somebody interrupted me, OK
-        }
-    }
-}
 }
